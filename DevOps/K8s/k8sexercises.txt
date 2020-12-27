@@ -1,0 +1,47 @@
+history
+    1  minikube version
+    2  minikube start --wait=false
+    3  vi replicaset-definition.yaml
+    4  kubectl create -f replicaset-definition.yaml
+    5  cat replicaset-definition.yaml
+    6  kubectl create rs myapp-replicaset --image=nginx --replicas=3  --dry-run=client -o yaml
+    7  kubectl create rs --help
+    8  kubectl create -f replicaset-definition.yaml
+    9  cat replicaset-definition.yaml
+   10  vi replicaset-definition.yaml
+   11  kubectl create -f replicaset-definition.yaml
+   12  kubectl get pods
+   13  kubectl exec -it myapp-replicaset-hmpvn
+   14  kubectl exec -it myapp-replicaset-hmpvn -- sh
+   15  ls
+   16  vi persistent.yml
+   17  vi .vimrc
+   18  vi persistent.yml
+   19  vi replicaset-definition.yaml
+   20  vi claimvolum.yml
+   21  kubectl create -f persistent.yml
+   22  kubectl create -f claimvolum.yml
+   23  kubectl get pv,pvc
+   24  kubectl create deployment mydeploy --image=nginx --replicas=3 --dry-run=client -o yaml > mydeployment.yml
+   25  kubectl create deployment mydeploy --image=nginx --dry-run=client -o yaml > mydeployment.yml
+   26  kubectl create deployment mydeploy --image=nginx --dry-run -o yaml > mydeployment.yml
+   27  vi mydeployment.yml
+   28  kubectl apply -f mydeployment.yml
+   29  vi mydeployment.yml
+   30  kubectl apply -f mydeployment.yml
+   31  vi mydeployment.yml
+   32  kubectl apply -f mydeployment.yml
+   33  kubectl get po
+   34  kubectl scale deployment mydeploy --replicas=3
+   35  kubectl get po
+   36  vi mydeployment.yml
+   37  kubectl apply -f mydeployment.yml
+   38  kubectl get po
+   39  kubectl edit deployments mydeploy
+   40  kubectl get po
+   41  kubectl expose deployment mydeploy --type=NodePort --port=80
+   42  kubectl get svc
+   43  curl localhost:31682
+   44  curl mydeploy:80
+   45  curl 10.96.129.107:80
+   46  history
