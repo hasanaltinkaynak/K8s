@@ -1,0 +1,49 @@
+pipeline {
+    agent { label "ansiblehost" }
+    environment {
+        PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
+        APP_NAME="fetchclassifier"
+        APP_STACK_NAME="${APP_NAME}-app-${BUILD_NUMBER}"
+        APP_REPO_NAME="${APP_NAME}"
+        AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
+        AWS_REGION="us-east-1"
+        ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        KEYPAIR="${APP_NAME}-test-${BUILD_NUMBER}.key"
+        ANSIBLE_HOST_KEY_CHECKING="False"
+        VERSION="v${BUILD_NUMBER}"
+    }
+    stages {
+        stage('Prepare Tags for Docker Images and Login to the ECR') {
+            steps {
+                echo 'Preparing Tags for Docker Images'
+                echo 'Version Number ${VERSION}'
+                sh "/home/haltinkaynak/fetchdocker/test/logintoecr.sh"
+            }
+        }
+        stage('Build App Docker Images') {
+            steps {
+                echo 'Building App Test Images'
+                sh "/home/haltinkaynak/fetchdocker/test/build-test-docker-images-for-ecr.sh ${VERSION}"
+                sh 'sudo docker image ls'
+            }
+        }
+        stage('Push Images to ECR Repo') {
+            steps {
+                echo "Pushing ${APP_NAME} App Images to ECR Repo"
+                sh "/home/haltinkaynak/fetchdocker/test/push-test-docker-images-to-ecr.sh ${VERSION}"
+            }
+        }
+        stage('Delete OLD Deploy App on EKS Cluster'){
+            steps {
+                echo 'Deleting the OLD App on EKS Cluster'
+                sh '/home/haltinkaynak/fetchdocker/test/deleteolddeployment.sh'
+            }
+        }
+        stage('Deploy App on EKS Cluster'){
+            steps {
+                echo 'Deploying App on EKS Cluster'
+                sh '/home/haltinkaynak/EKS/fetchdeployment.sh ${VERSION}'
+            }
+        }
+    }
+}
